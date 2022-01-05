@@ -1,6 +1,7 @@
 import { mapValues } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Col, Row } from 'reactstrap'
+import { FixedSizeGrid as Grid } from 'react-window'
 
 import { CenteredEditable, Editable } from 'src/components/Common/Editable'
 import { ColCustom } from 'src/components/Common/ColCustom'
@@ -28,6 +29,7 @@ import { CountryDistributionPlotCard } from './CountryDistributionPlotCard'
 import { CountryFlag } from '../Common/CountryFlag'
 import { USStateCode } from '../Common/USStateCode'
 import { PageHeading } from '../Common/PageHeading'
+import { GridBreakpoint } from '../../types'
 
 const { defaultRegionName, regionNames, regionsHaveData } = getRegions()
 const enabledFilters = ['clusters', 'countriesWithIcons']
@@ -60,21 +62,37 @@ export function CountryDistributionPage() {
     /* prettier-ignore */
     useMemo(() => filterClusters(clusters, withCountriesFiltered), [clusters, withCountriesFiltered])
 
-  const gridBreakpoint = useGridBreakpointQuery()
-  const countryDistributionComponents = useMemo(
-    () =>
-      withClustersFiltered.map(({ country, distribution }) => (
-        <ColCustom key={country} md={12} lg={6} xl={6} xxl={4}>
-          <CountryDistributionPlotCard
-            country={country}
-            distribution={distribution}
-            cluster_names={enabledClusters}
-            Icon={iconComponent}
-          />
-        </ColCustom>
-      )),
-    [enabledClusters, withClustersFiltered, iconComponent],
-  )
+  const countryDistributionComponents = useMemo(() => {
+    const columnCount = 1
+
+    return (
+      <Grid
+        width={1000}
+        height={1100}
+        columnWidth={1000}
+        columnCount={1}
+        rowHeight={550}
+        rowCount={withClustersFiltered.length}
+      >
+        {({ columnIndex, rowIndex, style }: { columnIndex: number; rowIndex: number; style: any }) => {
+          const index = rowIndex + columnIndex
+          const { country, distribution } = withClustersFiltered[index]
+          return (
+            <div style={style}>
+              <ColCustom md={12} lg={12} xl={12} xxl={12}>
+                <CountryDistributionPlotCard
+                  country={country}
+                  distribution={distribution}
+                  cluster_names={enabledClusters}
+                  Icon={iconComponent}
+                />
+              </ColCustom>
+            </div>
+          )
+        }}
+      </Grid>
+    )
+  }, [enabledClusters, withClustersFiltered, iconComponent])
 
   const handleClusterCheckedChange = useCallback((clusterName: string) => {
     setClusters((oldClusters) => toggleCluster(oldClusters, clusterName))
@@ -112,10 +130,6 @@ export function CountryDistributionPage() {
     setPlaces(disableAllPlaces)
   }, [setPlaces])
 
-
-  useEffect(() => {
-    console.log(gridBreakpoint)
-  }, [gridBreakpoint])
 
   const IntroContent = useMemo(() => {
     const contentFilename = getPerCountryIntroContentFilename(currentRegion)

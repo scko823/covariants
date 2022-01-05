@@ -104,6 +104,7 @@
     "react-share": "4.3.1",
     "react-super-responsive-table": "5.2.0",
     "react-toggle": "4.1.1",
+    "react-window": "1.8.6",
     "reactstrap": "8.5.1",
     "recharts": "2.0.9",
     "redux": "4.0.5",
