@@ -22,6 +22,8 @@ import {
   toggleCluster,
 } from 'src/io/getPerCountryData'
 
+import { useGridBreakpointQuery } from 'src/hooks/useMediaQuery'
+
 import { CountryDistributionPlotCard } from './CountryDistributionPlotCard'
 import { CountryFlag } from '../Common/CountryFlag'
 import { USStateCode } from '../Common/USStateCode'
@@ -58,6 +60,7 @@ export function CountryDistributionPage() {
     /* prettier-ignore */
     useMemo(() => filterClusters(clusters, withCountriesFiltered), [clusters, withCountriesFiltered])
 
+  const gridBreakpoint = useGridBreakpointQuery()
   const countryDistributionComponents = useMemo(
     () =>
       withClustersFiltered.map(({ country, distribution }) => (
@@ -108,6 +111,11 @@ export function CountryDistributionPage() {
   const handleCountryDeselectAll = useCallback(() => {
     setPlaces(disableAllPlaces)
   }, [setPlaces])
+
+
+  useEffect(() => {
+    console.log(gridBreakpoint)
+  }, [gridBreakpoint])
 
   const IntroContent = useMemo(() => {
     const contentFilename = getPerCountryIntroContentFilename(currentRegion)
